@@ -138,7 +138,9 @@ const TACTICAS = {
   intros: "introduce todas las hipótesis que puede.",
   exact: "da exactamente la prueba de la meta: un término cuyo tipo es justo lo que se pide.",
   apply: "usa un resultado cuya conclusión encaja con la meta; lo que queda por demostrar son sus premisas.",
-  rw: "reescribe: cambia en la meta cada lado izquierdo de la igualdad por su lado derecho.",
+  rw: "reescribe: cambia el lado izquierdo de la igualdad por el derecho allí donde aparezca.",
+  nth_rewrite: "reescribe solo una de las apariciones: la que dice el número.",
+  subst: "sustituye una variable por su valor en todo el panel y quita la hipótesis.",
   rewrite: "reescribe con una igualdad.",
   simp: "simplifica con las reglas de simplificación que conoce Lean (y las que le des).",
   constructor: "parte la meta en sus piezas: para un «y», hay que demostrar cada lado por separado.",
@@ -277,7 +279,10 @@ function renderMetas({ model, el }) {
         ". Encima de la raya, lo que tienes (las hipótesis); en la línea de <code>⊢</code>, lo que te piden. Pulsa <b>Paso ▶</b>." + (notas[0] ? " " + md(notas[0]) : "");
     }
     const p = P[k - 1], nom = nombreTactica(p.tactica);
-    let t = "<code>" + esc(p.tactica.split("\n")[0]) + (p.tactica.includes("\n") ? " …" : "") + "</code> " + (TACTICAS[nom] || "es una táctica: cambia las metas.");
+    const base = nom.replace(/[!?]$/, "");
+    let t = "<code>" + esc(p.tactica.split("\n")[0]) + (p.tactica.includes("\n") ? " …" : "") + "</code> " + (TACTICAS[nom] || TACTICAS[base] || "es una táctica: cambia las metas.");
+    if (nom.endsWith("?") && TACTICAS[base]) t += " Con <code>?</code> al final, además, escribe en <b>Mensajes de Lean</b> cómo lo ha hecho.";
+    if (/\sat\s+\S/.test(p.tactica.split("\n")[0])) t += " Con <code>at</code>, lo hace en una hipótesis en lugar de en la meta.";
     const a = p.antes.length, d = p.despues.length;
     const err = M.find(m => m.grave === "error" && m.linea >= p.linea && m.linea <= p.lineaFin);
     if (err) return t + " Pero aquí no funciona: <b>Lean marca un error</b> en esta línea y la meta sigue abierta. Lo que dice Lean está en <b>Mensajes de Lean</b>." + (notas[k] ? " " + md(notas[k]) : "");

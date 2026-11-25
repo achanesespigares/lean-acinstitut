@@ -22,6 +22,7 @@ project:
         - file: capitulos/02-funciones.md
         - file: capitulos/03-proposiciones.md
         - file: capitulos/04-panel.md
+        - file: capitulos/05-reescribir.md
 site:
   template: book-theme
   options:
