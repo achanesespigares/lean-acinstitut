@@ -44,6 +44,7 @@ pre.lm-codigo{ margin:0; font:400 13.5px/1.8 var(--mono); overflow-x:auto; backg
 .lm-meta .obj.solo{ margin-top:0; padding-top:0; border-top:0; }
 .lm-meta .obj.cambia{ background:color-mix(in srgb,var(--acento) 10%,transparent); }
 .lm-hecho{ padding:10px 12px; border:1.5px solid var(--si); background:var(--sisuave); color:var(--si); font:600 14px/1.4 var(--titulo); border-radius:6px; }
+.lm-sorry{ padding:10px 12px; border:1.5px solid #8a5a00; background:#fbf1dc; color:#6b4500; font:600 14px/1.4 var(--titulo); border-radius:6px; }
 .lm-tapado{ padding:14px; border:1.5px dashed var(--filete); color:var(--banda); text-align:center; font:600 14px var(--titulo); border-radius:6px; }
 .lm-vacio{ color:var(--banda); font-style:italic; }
 .lm-consola{ font:400 13.5px/1.6 var(--mono); background:var(--tinta); color:#f4f4f4; padding:8px 12px; white-space:pre-wrap; min-height:2.6em; }
@@ -271,6 +272,7 @@ function renderMetas({ model, el }) {
     const a = p.antes.length, d = p.despues.length;
     const err = M.find(m => m.grave === "error" && m.linea >= p.linea && m.linea <= p.lineaFin);
     if (err) return t + " Pero aquí no funciona: <b>Lean marca un error</b> en esta línea y la meta sigue abierta. Lo que dice Lean está en <b>Mensajes de Lean</b>." + (notas[k] ? " " + md(notas[k]) : "");
+    if (nom === "sorry") return t + " La meta desaparece del panel, pero <b>no está demostrada</b>: Lean marca la declaración con un aviso." + (notas[k] ? " " + md(notas[k]) : "");
     if (d === 0) t += k === N ? " <b>No queda ninguna meta: la demostración está completa.</b>" : " Esta meta queda <b>demostrada</b>.";
     else if (d > a) t += " Ahora hay " + plural(d, "meta", "metas") + " donde " + (a === 1 ? "había una" : "había " + a) + ".";
     else if (d < a) t += " Quedan " + plural(d, "meta", "metas") + ".";
@@ -296,6 +298,7 @@ function renderMetas({ model, el }) {
       if (oculto) q(".lm-ahora").innerHTML = '<div class="lm-tapado">¿Qué metas quedarán? Piénsalo y pulsa Paso ▶</div>';
       else q(".lm-ahora").innerHTML = p.despues.length
         ? p.despues.map(g => tarjeta(g, p.antes[0])).join("")
+        : nombreTactica(p.tactica) === "sorry" ? '<div class="lm-sorry">⚠ Meta tapada con sorry: sin demostrar.</div>'
         : '<div class="lm-hecho">' + (k === N ? "✓ No quedan metas: demostrado." : "✓ Meta cerrada.") + "</div>";
       q(".lm-num").textContent = oculto ? "?" : plural(p.despues.length, "meta", "metas");
     }

@@ -20,6 +20,7 @@ project:
       children:
         - file: capitulos/01-calculadora.md
         - file: capitulos/02-funciones.md
+        - file: capitulos/03-proposiciones.md
 site:
   template: book-theme
   options:
