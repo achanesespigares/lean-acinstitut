@@ -19,6 +19,7 @@ project:
     - title: Parte I · Primeros pasos
       children:
         - file: capitulos/01-calculadora.md
+        - file: capitulos/02-funciones.md
 site:
   template: book-theme
   options:

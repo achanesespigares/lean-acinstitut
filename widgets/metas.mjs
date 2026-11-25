@@ -182,6 +182,8 @@ const ORDENES = {
   theorem: "<code>theorem</code> es una afirmación con nombre y su demostración.",
   def: "<code>def</code> define algo con nombre.",
 };
+// La primera frase de un mensaje de Lean, en una línea (los errores largos siguen enteros en la consola)
+const resumen = s => { const p = s.split("\n\n")[0].replace(/\s+/g, " ").trim(); return p.length > 90 ? p.slice(0, 88) + "…" : p; };
 const nombreTactica = t => (t.match(/^[A-Za-z_]+[!?]?/) || [""])[0];
 const plural = (n, a, b) => n + " " + (n === 1 ? a : b);
 
@@ -254,7 +256,7 @@ function renderMetas({ model, el }) {
       if (k === 0) return "Cada línea es una orden para Lean. Pulsa <b>Paso ▶</b> y mira qué contesta Lean a cada una en <b>Mensajes de Lean</b>.";
       const n = E[k - 1], orden = (L[n - 1].trim().match(/^#?\w+/) || [""])[0];
       const ms = M.filter(m => m.linea === n);
-      let t = (ORDENES[orden] || "") + " Lean contesta " + ms.map(m => (m.grave === "error" ? "con un error: " : m.grave === "aviso" ? "con un aviso: " : "") + "<code>" + esc(m.texto.split("\n")[0]) + "</code>").join(" y ") + ".";
+      let t = (ORDENES[orden] || "") + " Lean contesta " + ms.map(m => (m.grave === "error" ? "con un error: " : m.grave === "aviso" ? "con un aviso: " : "") + "<code>" + esc(resumen(m.texto)) + "</code>").join(" y ") + ".";
       if (notas[k]) t += " " + md(notas[k]);
       return t;
     }
