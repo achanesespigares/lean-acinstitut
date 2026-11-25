@@ -21,7 +21,7 @@ def nodoSinInteres (stx : Syntax) : Bool :=
   let k := stx.getKind
   k == nullKind || k == ``Lean.Parser.Tactic.tacticSeq || k == ``Lean.Parser.Tactic.tacticSeq1Indented ||
   k == ``Lean.Parser.Tactic.tacticSeqBracketed || k == ``Lean.Parser.Term.byTactic ||
-  k == ``Lean.cdot || k == ``Lean.cdotTk || k == `«]» || k == `«;» || k == `by
+  k == ``Lean.cdot || k == ``Lean.cdotTk || k == ``Lean.Parser.Tactic.case || k == `«]» || k == `«;» || k == `by
 
 /-- El texto de la táctica en el archivo; vacío si Lean la ha fabricado (macros). -/
 def textoOriginal (stx : Syntax) : String :=
@@ -36,12 +36,25 @@ unsafe def trazar (entrada texto : String) (env : Environment) (mensajes : Messa
   let s ← IO.processCommands inputCtx parserState commandState
   let mut vistos : Std.HashSet (Nat × Nat) := {}
   let mut pasos : Array (Nat × Int × Json) := #[]
+  -- bloques: las metas que siguen abiertas al acabar cada nodo de tácticas
+  let mut focos : Array Json := #[]
+  let mut rangos : Std.HashSet (Nat × Nat) := {}
   for t in s.commandState.infoState.trees do
     let infos := t.foldInfo (init := #[]) fun ctx info acc =>
       match info with
       | .ofTacticInfo ti => acc.push (ctx, ti)
       | _ => acc
     for (ctx, ti) in infos do
+      -- cada nodo es un posible «bloque»: lo que queda abierto cuando termina
+      if let (some i, some f) := (ti.stx.getPos?, ti.stx.getTailPos?) then
+        if !rangos.contains (i.byteIdx, f.byteIdx) then
+          rangos := rangos.insert (i.byteIdx, f.byteIdx)
+            let pI := inputCtx.fileMap.toPosition i
+            let pF := inputCtx.fileMap.toPosition f
+            let despues ← ti.goalsAfter.mapM (metaTexto ctx ti.mctxAfter)
+            focos := focos.push <| Json.mkObj [("linea", Json.num pI.line), ("col", Json.num pI.column),
+              ("lineaFin", Json.num pF.line), ("colFin", Json.num pF.column),
+              ("despues", Json.arr (despues.toArray.map Json.str))]
       if nodoSinInteres ti.stx then continue
       let tac := textoOriginal ti.stx
       if tac.isEmpty then continue
@@ -67,7 +80,7 @@ unsafe def trazar (entrada texto : String) (env : Environment) (mensajes : Messa
     return Json.mkObj [("linea", Json.num m.pos.line), ("col", Json.num m.pos.column),
       ("grave", Json.str grave), ("texto", Json.str (← m.data.toString))]
   return Json.mkObj [("archivo", Json.str entrada), ("codigo", Json.str texto),
-    ("pasos", Json.arr (ordenados.map (·.2.2))), ("mensajes", Json.arr msgs.toArray)]
+    ("pasos", Json.arr (ordenados.map (·.2.2))), ("focos", Json.arr focos), ("mensajes", Json.arr msgs.toArray)]
 
 /-- Traza cada archivo y escribe su JSON al lado (archivo.lean → archivo.json). Los archivos con
 la misma cabecera (los mismos `import`) comparten el entorno: Mathlib se importa una sola vez. -/

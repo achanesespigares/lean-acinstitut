@@ -45,6 +45,7 @@ pre.lm-codigo{ margin:0; font:400 13.5px/1.8 var(--mono); overflow-x:auto; backg
 .lm-meta .obj.cambia{ background:color-mix(in srgb,var(--acento) 10%,transparent); }
 .lm-hecho{ padding:10px 12px; border:1.5px solid var(--si); background:var(--sisuave); color:var(--si); font:600 14px/1.4 var(--titulo); border-radius:6px; }
 .lm-sorry{ padding:10px 12px; border:1.5px solid #8a5a00; background:#fbf1dc; color:#6b4500; font:600 14px/1.4 var(--titulo); border-radius:6px; }
+.lm-siguen{ margin:12px 0 6px !important; }
 .lm-tapado{ padding:14px; border:1.5px dashed var(--filete); color:var(--banda); text-align:center; font:600 14px var(--titulo); border-radius:6px; }
 .lm-vacio{ color:var(--banda); font-style:italic; }
 .lm-consola{ font:400 13.5px/1.6 var(--mono); background:var(--tinta); color:#f4f4f4; padding:8px 12px; white-space:pre-wrap; min-height:2.6em; }
@@ -172,6 +173,7 @@ const TACTICAS = {
   trivial: "cierra metas sencillas.",
   assumption: "busca entre las hipótesis una que sea justo la meta.",
   sorry: "deja la meta sin demostrar: Lean lo acepta, pero avisa.",
+  rename_i: "pone nombre a las variables inaccesibles (las de la cruz ✝).",
 };
 // Qué hace cada orden de Lean (para los programas sin tácticas)
 const ORDENES = {
@@ -213,6 +215,13 @@ function renderMetas({ model, el }) {
   const P = D.pasos || [];
   const M = D.mensajes || [];
   const notas = C.notas || {};
+  const F = D.focos || [];
+  // Las metas que siguen abiertas fuera del bloque «·» que acaba con el paso p (el bloque más grande)
+  function pendientes(p) {
+    const fs = F.filter(f => f.lineaFin === p.lineaFin && f.colFin === p.colFin)
+      .sort((a, b) => (a.linea - b.linea) || (a.col - b.col));
+    return fs.length ? fs[0].despues : [];
+  }
   q(".lm-tit").textContent = C.titulo || "Paso a paso";
   q(".lm-etq").textContent = C.etiqueta || "Lean";
   if (C.idea) q(".lm-idea").innerHTML = md(C.idea); else q(".lm-idea").remove();
@@ -265,7 +274,7 @@ function renderMetas({ model, el }) {
     if (k === 0) {
       const g = P[0].antes.length;
       return "Al empezar, Lean pone en el panel lo que hay que demostrar: " + (g === 1 ? "una meta" : g + " metas") +
-        ". Encima de la raya, lo que tienes (las hipótesis); en la línea de <code>⊢</code>, lo que te piden. Pulsa <b>Paso ▶</b>.";
+        ". Encima de la raya, lo que tienes (las hipótesis); en la línea de <code>⊢</code>, lo que te piden. Pulsa <b>Paso ▶</b>." + (notas[0] ? " " + md(notas[0]) : "");
     }
     const p = P[k - 1], nom = nombreTactica(p.tactica);
     let t = "<code>" + esc(p.tactica.split("\n")[0]) + (p.tactica.includes("\n") ? " …" : "") + "</code> " + (TACTICAS[nom] || "es una táctica: cambia las metas.");
@@ -273,7 +282,9 @@ function renderMetas({ model, el }) {
     const err = M.find(m => m.grave === "error" && m.linea >= p.linea && m.linea <= p.lineaFin);
     if (err) return t + " Pero aquí no funciona: <b>Lean marca un error</b> en esta línea y la meta sigue abierta. Lo que dice Lean está en <b>Mensajes de Lean</b>." + (notas[k] ? " " + md(notas[k]) : "");
     if (nom === "sorry") return t + " La meta desaparece del panel, pero <b>no está demostrada</b>: Lean marca la declaración con un aviso." + (notas[k] ? " " + md(notas[k]) : "");
-    if (d === 0) t += k === N ? " <b>No queda ninguna meta: la demostración está completa.</b>" : " Esta meta queda <b>demostrada</b>.";
+    const resto = d === 0 ? pendientes(p) : [];
+    if (d === 0 && resto.length) t += " Esta meta queda <b>demostrada</b>. " + (resto.length === 1 ? "Sigue abierta una meta" : "Siguen abiertas " + resto.length + " metas") + ": la" + (resto.length === 1 ? "" : "s") + " ves debajo.";
+    else if (d === 0) t += k === N ? " <b>No queda ninguna meta: la demostración está completa.</b>" : " Esta meta queda <b>demostrada</b>.";
     else if (d > a) t += " Ahora hay " + plural(d, "meta", "metas") + " donde " + (a === 1 ? "había una" : "había " + a) + ".";
     else if (d < a) t += " Quedan " + plural(d, "meta", "metas") + ".";
     if (notas[k]) t += " " + md(notas[k]);
@@ -299,8 +310,9 @@ function renderMetas({ model, el }) {
       else q(".lm-ahora").innerHTML = p.despues.length
         ? p.despues.map(g => tarjeta(g, p.antes[0])).join("")
         : nombreTactica(p.tactica) === "sorry" ? '<div class="lm-sorry">⚠ Meta tapada con sorry: sin demostrar.</div>'
-        : '<div class="lm-hecho">' + (k === N ? "✓ No quedan metas: demostrado." : "✓ Meta cerrada.") + "</div>";
-      q(".lm-num").textContent = oculto ? "?" : plural(p.despues.length, "meta", "metas");
+        : '<div class="lm-hecho">' + (k === N ? "✓ No quedan metas: demostrado." : "✓ Meta cerrada.") + "</div>" +
+          (pendientes(p).length ? '<p class="lm-micro lm-siguen">' + (pendientes(p).length === 1 ? "Sigue abierta" : "Siguen abiertas") + '</p>' + pendientes(p).map(g => tarjeta(g)).join("") : "");
+      q(".lm-num").textContent = oculto ? "?" : plural(p.despues.length || pendientes(p).length, "meta", "metas");
     }
     pintaMensajes();
   }

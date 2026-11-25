@@ -21,6 +21,7 @@ project:
         - file: capitulos/01-calculadora.md
         - file: capitulos/02-funciones.md
         - file: capitulos/03-proposiciones.md
+        - file: capitulos/04-panel.md
 site:
   template: book-theme
   options:

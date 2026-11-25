@@ -28,7 +28,7 @@ El libro acaba de empezar. Ya puedes leer [Cómo leer este libro](capitulos/00-c
 
 | Parte | Capítulos |
 |---|---|
-| I · Primeros pasos | **[Lean como calculadora](capitulos/01-calculadora.md)** · **[Funciones y definiciones](capitulos/02-funciones.md)** · **[Proposiciones y pruebas](capitulos/03-proposiciones.md)** · El panel de metas · Reescribir: `rw` y `simp` |
+| I · Primeros pasos | **[Lean como calculadora](capitulos/01-calculadora.md)** · **[Funciones y definiciones](capitulos/02-funciones.md)** · **[Proposiciones y pruebas](capitulos/03-proposiciones.md)** · **[El panel de metas](capitulos/04-panel.md)** · Reescribir: `rw` y `simp` |
 | II · Lógica | Implicación y conjunción · Disyunción y casos · Negación y absurdo · Para todo y existe · Igualdad y `calc` |
 | III · Inducción y números | Inducción · Divisibilidad y primos · Desigualdades · Álgebra con `ring` · Congruencias y Fermat |
 | IV · Matemáticas con Mathlib | Conjuntos · Funciones: inyectiva y sobreyectiva · Sucesiones y límites · Continuidad y derivadas · Buscar en Mathlib |
