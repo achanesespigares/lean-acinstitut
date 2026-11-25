@@ -26,6 +26,7 @@ project:
     - title: Parte II · Lógica
       children:
         - file: capitulos/06-implicacion.md
+        - file: capitulos/07-disyuncion.md
 site:
   template: book-theme
   options:
