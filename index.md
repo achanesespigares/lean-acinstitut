@@ -1,0 +1,38 @@
+---
+title: Mirar y ver tu código pensar
+subtitle: Entendiendo Lean 4, desde dentro
+---
+
+Un libro para aprender a demostrar con Lean 4 viendo cómo piensa cada demostración: táctica a táctica, con lo que sabes y lo que te falta siempre a la vista. Es el quinto de la colección, después de los de Python, R, Julia y SageMath, y está hecho con el mismo método. Cada idea parte de una situación conocida, se construye con código y se comprueba visualizando cada paso.
+
+Lean 4 es un lenguaje de programación y, sobre todo, un **demostrador**: un programa que comprueba, paso a paso y sin fiarse de nadie, que una demostración matemática es correcta. Con su biblioteca **Mathlib**, una enorme colección de matemáticas comprobadas por ordenador que escribe y revisa una comunidad abierta, sirve para demostrar desde que la suma conmuta hasta resultados de investigación.
+
+Los libros anteriores de la colección terminaban con la misma grieta. Un ordenador puede comprobar mil casos, pero eso no es demostrar que algo vale para todos. Este libro empieza justo ahí.
+
+## Un libro, dos rutas
+
+Como los programas del IB con su nivel medio y su nivel superior, este libro tiene **dos rutas** que conviven en las mismas páginas.
+
+- La **ruta base** es la que sigue todo el mundo: la idea con un ejemplo hecho, la demostración visualizada paso a paso y los ejercicios. Sirve para clase y para aprender solo.
+- Los apartados **A fondo** llevan una cápsula negra. Cuentan cómo funciona Lean por dentro y cómo se trabaja con él como profesional. Se pueden saltar sin perder el hilo.
+
+Elige aquí tu ruta. La elección se recuerda en todo el libro, y puedes cambiarla cuando quieras desde cualquier capítulo.
+
+```{anywidget} ./widgets/rutas.mjs
+{}
+```
+
+## Lo que hay ahora
+
+El libro acaba de empezar. Ya puedes leer [Cómo leer este libro](capitulos/00-como-leer.md), con la primera demostración visualizada. El plan completo (en negrita, lo que ya está escrito):
+
+| Parte | Capítulos |
+|---|---|
+| I · Primeros pasos | Lean como calculadora · Funciones y definiciones · Proposiciones y pruebas · El panel de metas · Reescribir: `rw` y `simp` |
+| II · Lógica | Implicación y conjunción · Disyunción y casos · Negación y absurdo · Para todo y existe · Igualdad y `calc` |
+| III · Inducción y números | Inducción · Divisibilidad y primos · Desigualdades · Álgebra con `ring` · Congruencias y Fermat |
+| IV · Matemáticas con Mathlib | Conjuntos · Funciones: inyectiva y sobreyectiva · Sucesiones y límites · Continuidad y derivadas · Buscar en Mathlib |
+| V · Lean por dentro | Proposiciones como tipos · Tipos dependientes y universos · Qué hacen `simp`, `omega` y `decide` · El núcleo y los axiomas · Tus propias tácticas |
+| Proyectos | Demostrar que el fabricante de ejercicios funciona · RSA demostrado |
+
+Los dos proyectos cierran lo que el libro de SageMath dejó abierto. Allí, un fabricante de ejercicios comprobaba con ejemplos que el discriminante siempre salía un cuadrado, y RSA descifraba bien todos los mensajes que se probaban. Aquí se demuestra que tiene que ser así, siempre.

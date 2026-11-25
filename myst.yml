@@ -1,0 +1,24 @@
+# Mirar y ver tu código pensar · Entendiendo Lean 4, desde dentro · AC Institut
+# Jupyter Book 2 (motor MyST). Construir:  npx myst build --html
+version: 1
+project:
+  id: lean-acinstitut
+  title: Mirar y ver tu código pensar
+  subtitle: Entendiendo Lean 4, desde dentro
+  authors:
+    - name: Antonio Chanes Espigares
+  license: CC-BY-NC-SA-4.0
+  github: https://github.com/achanesespigares/lean-acinstitut
+  exclude:
+    - herramientas/**
+    - README.md
+    - node_modules/**
+  toc:
+    - file: index.md
+    - file: capitulos/00-como-leer.md
+site:
+  template: book-theme
+  options:
+    logo_text: ac | institut · Lean
+    style: estilo/ac-institut.css
+    folders: true

@@ -1,0 +1,7 @@
+node_modules
+_build/
+_templates/
+__pycache__/
+.DS_Store
+# Mathlib compilada (7 GB): la baja «lake update» en herramientas/lean
+herramientas/lean/.lake

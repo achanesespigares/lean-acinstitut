@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "Si usas este libro, cítalo así."
+title: "Mirar y ver tu código pensar · Entendiendo Lean 4, desde dentro"
+type: software
+authors:
+  - family-names: "Chanes Espigares"
+    given-names: "Antonio"
+license: CC-BY-NC-SA-4.0
+url: "https://achanesespigares.github.io/lean-acinstitut/"
+repository-code: "https://github.com/achanesespigares/lean-acinstitut"
+keywords: ["Lean 4", "Lean", "Mathlib", "demostración", "matemáticas", "lógica", "educación", "visualización de código", "Jupyter Book"]
