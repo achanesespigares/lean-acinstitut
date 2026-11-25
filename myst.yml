@@ -28,6 +28,7 @@ project:
         - file: capitulos/06-implicacion.md
         - file: capitulos/07-disyuncion.md
         - file: capitulos/08-negacion.md
+        - file: capitulos/09-cuantificadores.md
 site:
   template: book-theme
   options:
