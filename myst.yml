@@ -23,6 +23,9 @@ project:
         - file: capitulos/03-proposiciones.md
         - file: capitulos/04-panel.md
         - file: capitulos/05-reescribir.md
+    - title: Parte II · Lógica
+      children:
+        - file: capitulos/06-implicacion.md
 site:
   template: book-theme
   options:
