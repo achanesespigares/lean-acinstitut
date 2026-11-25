@@ -27,6 +27,7 @@ project:
       children:
         - file: capitulos/06-implicacion.md
         - file: capitulos/07-disyuncion.md
+        - file: capitulos/08-negacion.md
 site:
   template: book-theme
   options:
