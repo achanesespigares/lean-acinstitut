@@ -84,6 +84,8 @@ unsafe def main (args : List String) : IO Unit := do
     let (env, mensajes) ← match cache.get? clave with
       | some e => pure e
       | none => do
+        if !cache.isEmpty then
+          throw <| IO.userError "Lean solo importa una vez por proceso: traza por separado los archivos con otra cabecera"
         let r ← processHeader cabecera {} mensajes inputCtx
         cache := cache.insert clave r
         pure r

@@ -50,14 +50,17 @@ def main(capitulos):
             trabajos.append((cap, nombre, previos[-1].group(1), cuerpo, w.start(1), w.end(1)))
     if not trabajos:
         print("No hay visualizadores de metas."); return
-    archivos = []
+    # Lean solo puede importar una vez por proceso: un proceso por cada cabecera (los import)
+    grupos = {}
     for cap, nombre, codigo, *_ in trabajos:
         f = tmp / f"{nombre}.lean"
         f.write_text(codigo, encoding="utf-8")
-        archivos.append(str(f))
-    r = subprocess.run([lake(), "env", "lean", "--run", "Trazar.lean", *archivos], cwd=LEAN, text=True, capture_output=True)
-    if r.returncode != 0:
-        sys.exit("Lean ha fallado:\n" + r.stderr[-3000:])
+        cabecera = "\n".join(l for l in codigo.splitlines() if l.startswith("import "))
+        grupos.setdefault(cabecera, []).append(str(f))
+    for archivos in grupos.values():
+        r = subprocess.run([lake(), "env", "lean", "--run", "Trazar.lean", *archivos], cwd=LEAN, text=True, capture_output=True)
+        if r.returncode != 0:
+            sys.exit("Lean ha fallado:\n" + r.stderr[-3000:])
     version = version_lean()
     nuevos = {}
     for cap, nombre, codigo, cuerpo, i, j in trabajos:

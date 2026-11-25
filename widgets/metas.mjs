@@ -41,6 +41,7 @@ pre.lm-codigo{ margin:0; font:400 13.5px/1.8 var(--mono); overflow-x:auto; backg
 .lm-meta .hip{ white-space:pre; }
 .lm-meta .hip.nueva{ background:var(--sisuave); box-shadow:-6px 0 0 var(--si); }
 .lm-meta .obj{ white-space:pre; margin-top:4px; padding-top:4px; border-top:1px dashed var(--fila); color:var(--acento); font-weight:600; }
+.lm-meta .obj.solo{ margin-top:0; padding-top:0; border-top:0; }
 .lm-meta .obj.cambia{ background:color-mix(in srgb,var(--acento) 10%,transparent); }
 .lm-hecho{ padding:10px 12px; border:1.5px solid var(--si); background:var(--sisuave); color:var(--si); font:600 14px/1.4 var(--titulo); border-radius:6px; }
 .lm-tapado{ padding:14px; border:1.5px dashed var(--filete); color:var(--banda); text-align:center; font:600 14px var(--titulo); border-radius:6px; }
@@ -48,6 +49,7 @@ pre.lm-codigo{ margin:0; font:400 13.5px/1.8 var(--mono); overflow-x:auto; backg
 .lm-consola{ font:400 13.5px/1.6 var(--mono); background:var(--tinta); color:#f4f4f4; padding:8px 12px; white-space:pre-wrap; min-height:2.6em; }
 .lm-consola .info{ color:#f4f4f4; } .lm-consola .aviso{ color:#f0c674; } .lm-consola .error{ color:#ff8a8a; }
 .lm-consola .lin{ color:#9a9a9a; }
+.lm-consola .actual{ background:#3a2a2f; box-shadow:-12px 0 0 #3a2a2f, 12px 0 0 #3a2a2f; }
 .lm-mandos{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; border-top:1px solid var(--fila); padding-top:12px; }
 .lm-b{ font:600 14px/1 var(--titulo); color:var(--tinta); background:#fff; border:1px solid var(--tinta); border-radius:999px; padding:10px 15px; cursor:pointer; text-decoration:none; display:inline-block; }
 .lm-b:hover{ background:var(--suave); }
@@ -170,6 +172,16 @@ const TACTICAS = {
   assumption: "busca entre las hipótesis una que sea justo la meta.",
   sorry: "deja la meta sin demostrar: Lean lo acepta, pero avisa.",
 };
+// Qué hace cada orden de Lean (para los programas sin tácticas)
+const ORDENES = {
+  "#eval": "<code>#eval</code> calcula la expresión y escribe su valor.",
+  "#check": "<code>#check</code> no calcula: escribe la expresión y, después de los dos puntos, su tipo.",
+  "#print": "<code>#print</code> enseña cómo está definido algo.",
+  "#reduce": "<code>#reduce</code> simplifica la expresión desplegando las definiciones.",
+  example: "<code>example</code> es una afirmación con su demostración, sin nombre.",
+  theorem: "<code>theorem</code> es una afirmación con nombre y su demostración.",
+  def: "<code>def</code> define algo con nombre.",
+};
 const nombreTactica = t => (t.match(/^[A-Za-z_]+[!?]?/) || [""])[0];
 const plural = (n, a, b) => n + " " + (n === 1 ? a : b);
 
@@ -180,8 +192,9 @@ function render({ model, el }) {
     let limpia = null;
     fetch(new URL("../" + archivo, import.meta.url))
       .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
-      .then(D => { limpia = renderMetas({ model: { get: k => k === "traza" ? D : model.get(k) }, el }); })
-      .catch(() => { el.textContent = "No se ha podido cargar el visualizador (" + archivo + ")."; });
+      .then(D => { limpia = renderMetas({ model: { get: k => k === "traza" ? D : model.get(k) }, el }); },
+            () => { el.textContent = "No se ha podido cargar el visualizador (" + archivo + ")."; })
+      .catch(e => { el.textContent = "El visualizador ha fallado: " + e.message; console.error(e); });
     return () => { if (typeof limpia === "function") limpia(); };
   }
   return renderMetas({ model, el });
@@ -204,12 +217,16 @@ function renderMetas({ model, el }) {
   if (!M.length) q(".lm-cons-bloque").remove();
 
   // Estados: 0 = al empezar (la meta del enunciado); k = la táctica k ya hecha.
-  const N = P.length;
+  // Sin tácticas (solo #eval, #check…), se recorren las líneas en las que Lean escribe algo
+  const modoMsg = P.length === 0 && M.length > 0;
+  const E = [...new Set(M.map(m => m.linea))].sort((a, b) => a - b);
+  const N = modoMsg ? E.length : P.length;
+  if (modoMsg) { q(".lm-panel").closest(".lm-caja").remove(); q(".lm-pred").closest("label").style.display = "none"; }
   let k = 0, oculto = false, timer = null;
   const pred = () => q(".lm-pred").checked;
 
   function pintaCodigo() {
-    const p = k > 0 ? P[k - 1] : null;
+    const p = k === 0 ? null : modoMsg ? { linea: E[k - 1], lineaFin: E[k - 1], col: 0, colFin: L[E[k - 1] - 1].length } : P[k - 1];
     q(".lm-codigo").innerHTML = L.map((l, i) => {
       const n = i + 1;
       let html = colorea(l), clase = "ln";
@@ -229,11 +246,19 @@ function renderMetas({ model, el }) {
     const m = parteMeta(texto), r = ref ? parteMeta(ref) : null;
     const hips = m.hip.map(h => '<div class="hip' + (r && !r.hip.includes(h) ? " nueva" : "") + '">' + esc(h) + "</div>").join("");
     return '<div class="lm-meta">' + (m.caso ? '<div class="caso">caso ' + esc(m.caso) + "</div>" : "") + hips +
-      '<div class="obj' + (r && r.obj !== m.obj ? " cambia" : "") + '">' + esc(m.obj) + "</div></div>";
+      '<div class="obj' + (r && r.obj !== m.obj ? " cambia" : "") + (m.hip.length ? "" : " solo") + '">' + esc(m.obj) + "</div></div>";
   }
 
   function narracion() {
-    if (N === 0) return "Este programa no tiene tácticas: lo que hace Lean se ve en sus mensajes.";
+    if (modoMsg) {
+      if (k === 0) return "Cada línea es una orden para Lean. Pulsa <b>Paso ▶</b> y mira qué contesta Lean a cada una en <b>Mensajes de Lean</b>.";
+      const n = E[k - 1], orden = (L[n - 1].trim().match(/^#?\w+/) || [""])[0];
+      const ms = M.filter(m => m.linea === n);
+      let t = (ORDENES[orden] || "") + " Lean contesta " + ms.map(m => (m.grave === "error" ? "con un error: " : m.grave === "aviso" ? "con un aviso: " : "") + "<code>" + esc(m.texto.split("\n")[0]) + "</code>").join(" y ") + ".";
+      if (notas[k]) t += " " + md(notas[k]);
+      return t;
+    }
+    if (N === 0) return "Este programa no tiene tácticas ni mensajes.";
     if (k === 0) {
       const g = P[0].antes.length;
       return "Al empezar, Lean pone en el panel lo que hay que demostrar: " + (g === 1 ? "una meta" : g + " metas") +
@@ -242,6 +267,8 @@ function renderMetas({ model, el }) {
     const p = P[k - 1], nom = nombreTactica(p.tactica);
     let t = "<code>" + esc(p.tactica.split("\n")[0]) + (p.tactica.includes("\n") ? " …" : "") + "</code> " + (TACTICAS[nom] || "es una táctica: cambia las metas.");
     const a = p.antes.length, d = p.despues.length;
+    const err = M.find(m => m.grave === "error" && m.linea >= p.linea && m.linea <= p.lineaFin);
+    if (err) return t + " Pero aquí no funciona: <b>Lean marca un error</b> en esta línea y la meta sigue abierta. Lo que dice Lean está en <b>Mensajes de Lean</b>." + (notas[k] ? " " + md(notas[k]) : "");
     if (d === 0) t += k === N ? " <b>No queda ninguna meta: la demostración está completa.</b>" : " Esta meta queda <b>demostrada</b>.";
     else if (d > a) t += " Ahora hay " + plural(d, "meta", "metas") + " donde " + (a === 1 ? "había una" : "había " + a) + ".";
     else if (d < a) t += " Quedan " + plural(d, "meta", "metas") + ".";
@@ -252,6 +279,7 @@ function renderMetas({ model, el }) {
   function pinta() {
     pintaCodigo();
     q(".lm-narr").innerHTML = narracion();
+    if (modoMsg) { pintaMensajes(); return; }
     const antesB = q(".lm-antes-bloque");
     if (k === 0) {
       antesB.style.display = "none";
@@ -269,11 +297,15 @@ function renderMetas({ model, el }) {
         : '<div class="lm-hecho">' + (k === N ? "✓ No quedan metas: demostrado." : "✓ Meta cerrada.") + "</div>";
       q(".lm-num").textContent = oculto ? "?" : plural(p.despues.length, "meta", "metas");
     }
-    // Mensajes de Lean: los de las líneas ya alcanzadas (todos al final)
+    pintaMensajes();
+  }
+
+  // Mensajes de Lean: los de las líneas ya alcanzadas (todos al final)
+  function pintaMensajes() {
     if (M.length) {
-      const hasta = k === 0 ? 0 : (k === N ? Infinity : P[k - 1].lineaFin);
-      const vis = N === 0 ? M : M.filter(m => m.linea <= hasta);
-      q(".lm-consola").innerHTML = vis.length ? vis.map(m => '<div class="' + m.grave + '"><span class="lin">línea ' + m.linea + " · </span>" + esc(m.texto) + "</div>").join("") : '<span class="lin">(todavía nada)</span>';
+      const hasta = k === 0 ? 0 : modoMsg ? E[k - 1] : (k === N ? Infinity : P[k - 1].lineaFin);
+      const vis = M.filter(m => m.linea <= hasta);
+      q(".lm-consola").innerHTML = vis.length ? vis.map(m => '<div class="' + m.grave + (modoMsg && m.linea === hasta ? " actual" : "") + '"><span class="lin">línea ' + m.linea + " · </span>" + esc(m.texto) + "</div>").join("") : '<span class="lin">(todavía nada)</span>';
     }
     q(".lm-cuenta").textContent = N ? "Paso " + k + " de " + N : "";
     q(".lm-atras").disabled = k === 0;

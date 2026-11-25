@@ -24,11 +24,11 @@ Elige aquí tu ruta. La elección se recuerda en todo el libro, y puedes cambiar
 
 ## Lo que hay ahora
 
-El libro acaba de empezar. Ya puedes leer [Cómo leer este libro](capitulos/00-como-leer.md), con la primera demostración visualizada. El plan completo (en negrita, lo que ya está escrito):
+El libro acaba de empezar. Ya puedes leer [Cómo leer este libro](capitulos/00-como-leer.md), con la primera demostración visualizada, y el primer capítulo, [Lean como calculadora](capitulos/01-calculadora.md). El plan completo (en negrita, lo que ya está escrito):
 
 | Parte | Capítulos |
 |---|---|
-| I · Primeros pasos | Lean como calculadora · Funciones y definiciones · Proposiciones y pruebas · El panel de metas · Reescribir: `rw` y `simp` |
+| I · Primeros pasos | **[Lean como calculadora](capitulos/01-calculadora.md)** · Funciones y definiciones · Proposiciones y pruebas · El panel de metas · Reescribir: `rw` y `simp` |
 | II · Lógica | Implicación y conjunción · Disyunción y casos · Negación y absurdo · Para todo y existe · Igualdad y `calc` |
 | III · Inducción y números | Inducción · Divisibilidad y primos · Desigualdades · Álgebra con `ring` · Congruencias y Fermat |
 | IV · Matemáticas con Mathlib | Conjuntos · Funciones: inyectiva y sobreyectiva · Sucesiones y límites · Continuidad y derivadas · Buscar en Mathlib |
