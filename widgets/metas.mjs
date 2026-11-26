@@ -176,6 +176,7 @@ const TACTICAS = {
   specialize: "aplica una hipótesis general a un caso concreto.",
   field_simp: "quita denominadores (sabiendo que no son cero).",
   gcongr: "reduce una desigualdad entre expresiones parecidas a desigualdades entre sus piezas.",
+  push_cast: "mueve las conversiones de tipo (↑) hacia dentro: ↑(k + 1) pasa a ser ↑k + 1.",
   ext: "para demostrar que dos funciones o conjuntos son iguales, toma un elemento cualquiera.",
   funext: "para demostrar que dos funciones son iguales, toma un valor cualquiera.",
   trivial: "cierra metas sencillas.",
