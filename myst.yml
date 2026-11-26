@@ -44,6 +44,9 @@ project:
         - file: capitulos/18-sucesiones.md
         - file: capitulos/19-continuidad.md
         - file: capitulos/20-buscar.md
+    - title: Parte V · Lean por dentro
+      children:
+        - file: capitulos/21-prop-tipos.md
 site:
   template: book-theme
   options:
