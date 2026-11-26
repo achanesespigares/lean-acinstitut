@@ -195,6 +195,7 @@ const TACTICAS = {
   "apply?": "busca en Mathlib teoremas cuya conclusión encaje con la meta. Si uno la cierra, lo dice; si no, propone los que dejan metas pendientes.",
   "simp?": "simplifica como simp y, además, escribe en <b>Mensajes de Lean</b> qué reglas ha usado, con un simp only que puedes copiar.",
   "rw?": "busca igualdades de Mathlib con las que reescribir la meta y las propone, cada una con la meta que dejaría.",
+  native_decide: "hace la cuenta como decide, pero compilada y ejecutada fuera del núcleo: mucho más rápido, a cambio de confiar en el compilador (un axioma más).",
   hint: "prueba varias tácticas automáticas a la vez y dice cuáles cierran la meta (🎉) y cuáles solo avanzan.",
 };
 // Qué hace cada orden de Lean (para los programas sin tácticas)
