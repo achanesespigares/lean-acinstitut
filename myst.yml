@@ -35,6 +35,7 @@ project:
         - file: capitulos/11-induccion.md
         - file: capitulos/12-divisibilidad.md
         - file: capitulos/13-desigualdades.md
+        - file: capitulos/14-ring.md
 site:
   template: book-theme
   options:
