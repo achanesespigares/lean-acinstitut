@@ -209,7 +209,7 @@ example (a b : ℕ) : a + b = b + a := by
 Require Import Arith.
 Search (_ + _ = _ + _) inside Nat.
 (* Nat.add_comm: forall n m : nat, n + m = m + n
-   … y una docena más *)
+   … y diez más *)
 ```
 
 ```isabelle
