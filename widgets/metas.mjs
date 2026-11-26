@@ -168,6 +168,7 @@ const TACTICAS = {
   push: "(aquí, push Not) empuja la negación hacia dentro hasta que desaparece: ¬(a ≤ b) pasa a b < a, ¬(p ∧ q) pasa a p → ¬q…",
   push_neg: "empuja la negación hacia dentro: ¬∀ pasa a ∃¬, ¬(a ≤ b) pasa a b < a…",
   have: "demuestra un resultado intermedio y lo añade como hipótesis.",
+  simpa: "simplifica la meta y la hipótesis indicada con simp, y cierra si las dos coinciden.",
   set: "pone nombre a una expresión y la sustituye por ese nombre en todo el panel.",
   refine: "construye la prueba dejando huecos (?_), que pasan a ser las metas que quedan.",
   show: "dice en voz alta cuál es la meta (y Lean comprueba que coincide).",

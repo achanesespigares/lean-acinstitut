@@ -36,6 +36,7 @@ project:
         - file: capitulos/12-divisibilidad.md
         - file: capitulos/13-desigualdades.md
         - file: capitulos/14-ring.md
+        - file: capitulos/15-congruencias.md
 site:
   template: book-theme
   options:
