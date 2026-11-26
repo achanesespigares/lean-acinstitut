@@ -40,6 +40,7 @@ project:
     - title: Parte IV · Matemáticas con Mathlib
       children:
         - file: capitulos/16-conjuntos.md
+        - file: capitulos/17-inyectivas.md
 site:
   template: book-theme
   options:
