@@ -66,6 +66,15 @@ def main(capitulos):
     for cap, nombre, codigo, cuerpo, i, j in trabajos:
         D = json.loads((tmp / f"{nombre}.json").read_text(encoding="utf-8"))
         D.pop("archivo", None)
+        # Los combinadores (t₁ <;> t₂, all_goals t, repeat t…) cuentan como un solo paso:
+        # se quitan los pasos internos que Lean registra dentro de ellos
+        COMB = ("all_goals", "any_goals", "repeat", "repeat'", "try", "first", "iterate")
+        def es_comb(q):
+            return "<;>" in q["tactica"] or q["tactica"].split()[0] in COMB
+        P = D["pasos"]
+        D["pasos"] = [p for p in P if p["tactica"].strip() != "<;>" and not any(
+            q is not p and es_comb(q) and q["linea"] == p["linea"] == q["lineaFin"]
+            and q["col"] <= p["col"] and p["colFin"] <= q["colFin"] for q in P)]
         D["lean"] = version
         errores = [m for m in D["mensajes"] if m["grave"] == "error"]
         if errores and not cuerpo.get("config", {}).get("espera_error"):

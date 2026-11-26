@@ -195,6 +195,10 @@ const TACTICAS = {
   "apply?": "busca en Mathlib teoremas cuya conclusión encaje con la meta. Si uno la cierra, lo dice; si no, propone los que dejan metas pendientes.",
   "simp?": "simplifica como simp y, además, escribe en <b>Mensajes de Lean</b> qué reglas ha usado, con un simp only que puedes copiar.",
   "rw?": "busca igualdades de Mathlib con las que reescribir la meta y las propone, cada una con la meta que dejaría.",
+  all_goals: "aplica la táctica que va detrás a todas las metas abiertas, no solo a la primera.",
+  repeat: "repite la táctica mientras funcione; con repeat', también en las metas nuevas que van apareciendo.",
+  first: "prueba las tácticas de la lista, en orden, y se queda con la primera que funciona.",
+  try: "intenta la táctica; si falla, no pasa nada y sigue adelante.",
   native_decide: "hace la cuenta como decide, pero compilada y ejecutada fuera del núcleo: mucho más rápido, a cambio de confiar en el compilador (un axioma más).",
   hint: "prueba varias tácticas automáticas a la vez y dice cuáles cierran la meta (🎉) y cuáles solo avanzan.",
 };
@@ -315,9 +319,12 @@ function renderMetas({ model, el }) {
     }
     const p = P[k - 1], nom = nombreTactica(p.tactica);
     const base = nom.replace(/[!?]$/, "");
-    let t = "<code>" + esc(p.tactica.split("\n")[0]) + (p.tactica.includes("\n") ? " …" : "") + "</code> " + (TACTICAS[nom] || TACTICAS[base] || "es una táctica: cambia las metas.");
+    const mProp = nom && D.codigo.match(new RegExp('^(?:open .* in\\s*)?(macro|elab|syntax)\\s+"' + nom.replace(/[?!]/g, "\\$&") + '[ "]', "m"));
+    const propia = mProp ? (mProp[1] === "elab" ? "es una táctica definida en este mismo programa, más arriba, con <code>elab</code>: Lean ejecuta el programa de su definición." : "es una táctica definida en este mismo programa, más arriba: Lean la sustituye por lo que dice su definición.") : "";
+    let t = "<code>" + esc(p.tactica.split("\n")[0]) + (p.tactica.includes("\n") ? " …" : "") + "</code> " + (propia ? propia : (TACTICAS[nom] || TACTICAS[base] || "es una táctica: cambia las metas."));
     if (nom.endsWith("?") && !TACTICAS[nom] && TACTICAS[base]) t += " Con <code>?</code> al final, además, escribe en <b>Mensajes de Lean</b> cómo lo ha hecho.";
     if (/\sat\s+\S/.test(p.tactica.split("\n")[0])) t += " Con <code>at</code>, lo hace en una hipótesis en lugar de en la meta.";
+    if (p.tactica.includes("<;>")) t += " Con <code>&lt;;&gt;</code>, la táctica de la derecha se aplica a todas las metas que deja la de la izquierda.";
     const a = p.antes.length, d = p.despues.length;
     if (esCadena(p)) return t + (nom === "calc" ? " Lean comprobará cada eslabón por separado: si todos están bien, la meta queda demostrada. Los vemos uno a uno." : " Cada rama, la que empieza por <code>|</code>, trabaja un caso: si todas cierran su meta, la demostración está hecha. Las vemos una a una.") + (notas[k] ? " " + md(notas[k]) : "");
     const err = M.find(m => m.grave === "error" && m.linea >= p.linea && m.linea <= p.lineaFin);
