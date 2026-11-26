@@ -30,6 +30,9 @@ project:
         - file: capitulos/08-negacion.md
         - file: capitulos/09-cuantificadores.md
         - file: capitulos/10-calc.md
+    - title: Parte III · Inducción y números
+      children:
+        - file: capitulos/11-induccion.md
 site:
   template: book-theme
   options:

@@ -223,6 +223,13 @@ function renderMetas({ model, el }) {
   const notas = C.notas || {};
   const F = D.focos || [];
   // ¿Hay algún error de Lean en la misma declaración (example, theorem…) que el paso p, antes de él?
+  // calc y las tácticas con ramas «with | …» cierran la meta de golpe: se comprueban por partes
+  function esCadena(p) {
+    if (p.despues.length) return false;
+    if (nombreTactica(p.tactica) === "calc") return true;
+    const l = p.tactica.split("\n");
+    return l.length > 1 && /\bwith\s*$/.test(l[0]) && /^\s*\|/.test(l[1] || "");
+  }
   function errorEnDecl(p) {
     let ini = p.linea;
     while (ini > 1 && !/^(example|theorem|lemma|def)\b/.test(L[ini - 1] || "")) ini--;
@@ -294,7 +301,7 @@ function renderMetas({ model, el }) {
     if (nom.endsWith("?") && TACTICAS[base]) t += " Con <code>?</code> al final, además, escribe en <b>Mensajes de Lean</b> cómo lo ha hecho.";
     if (/\sat\s+\S/.test(p.tactica.split("\n")[0])) t += " Con <code>at</code>, lo hace en una hipótesis en lugar de en la meta.";
     const a = p.antes.length, d = p.despues.length;
-    if (nom === "calc") return t + " Lean comprobará cada eslabón por separado: si todos están bien, la meta queda demostrada. Los vemos uno a uno." + (notas[k] ? " " + md(notas[k]) : "");
+    if (esCadena(p)) return t + (nom === "calc" ? " Lean comprobará cada eslabón por separado: si todos están bien, la meta queda demostrada. Los vemos uno a uno." : " Cada rama, la que empieza por <code>|</code>, trabaja un caso: si todas cierran su meta, la demostración está hecha. Las vemos una a una.") + (notas[k] ? " " + md(notas[k]) : "");
     const err = M.find(m => m.grave === "error" && m.linea >= p.linea && m.linea <= p.lineaFin);
     if (err) return t + " Pero aquí no funciona: <b>Lean marca un error</b> en esta línea y la meta sigue abierta. Lo que dice Lean está en <b>Mensajes de Lean</b>." + (notas[k] ? " " + md(notas[k]) : "");
     if (nom === "sorry") return t + " La meta desaparece del panel, pero <b>no está demostrada</b>: Lean marca la declaración con un aviso." + (notas[k] ? " " + md(notas[k]) : "");
@@ -327,10 +334,10 @@ function renderMetas({ model, el }) {
       else q(".lm-ahora").innerHTML = p.despues.length
         ? p.despues.map(g => tarjeta(g, p.antes[0])).join("")
         : nombreTactica(p.tactica) === "sorry" ? '<div class="lm-sorry">⚠ Meta tapada con sorry: sin demostrar.</div>'
-        : nombreTactica(p.tactica) === "calc" ? '<div class="lm-cadena">La meta se demuestra eslabón a eslabón. Pulsa <b>Paso ▶</b> para comprobarlos.</div>'
+        : esCadena(p) ? '<div class="lm-cadena">' + (nombreTactica(p.tactica) === "calc" ? "La meta se demuestra eslabón a eslabón." : "La meta se reparte en casos, uno por rama.") + ' Pulsa <b>Paso ▶</b> para comprobarlos.</div>'
         : '<div class="lm-hecho">' + (k === N && !errorEnDecl(p) ? "✓ No quedan metas: demostrado." : "✓ Meta cerrada.") + "</div>" +
           (pendientes(p).length ? '<p class="lm-micro lm-siguen">' + (pendientes(p).length === 1 ? "Sigue abierta" : "Siguen abiertas") + '</p>' + pendientes(p).map(g => tarjeta(g)).join("") : "");
-      q(".lm-num").textContent = oculto ? "?" : nombreTactica(p.tactica) === "calc" && !p.despues.length ? "cadena" : plural(p.despues.length || pendientes(p).length, "meta", "metas");
+      q(".lm-num").textContent = oculto ? "?" : esCadena(p) ? (nombreTactica(p.tactica) === "calc" ? "cadena" : "ramas") : plural(p.despues.length || pendientes(p).length, "meta", "metas");
     }
     pintaMensajes();
   }
