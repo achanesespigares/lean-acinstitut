@@ -42,6 +42,7 @@ project:
         - file: capitulos/16-conjuntos.md
         - file: capitulos/17-inyectivas.md
         - file: capitulos/18-sucesiones.md
+        - file: capitulos/19-continuidad.md
 site:
   template: book-theme
   options:

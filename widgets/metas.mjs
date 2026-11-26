@@ -179,6 +179,7 @@ const TACTICAS = {
   unfold: "despliega una definición.",
   specialize: "aplica una hipótesis general a un caso concreto.",
   field_simp: "quita denominadores (sabiendo que no son cero).",
+  fun_prop: "demuestra propiedades de funciones (continua, derivable…) descomponiéndolas en piezas que ya conoce: sumas, productos, composiciones.",
   ring_nf: "pone los dos lados en forma normal (desarrollados y ordenados) sin exigir que coincidan.",
   linear_combination: "comprueba que la meta es la combinación indicada de hipótesis: resta y deja el resto a ring.",
   noncomm_ring: "como ring, pero sin suponer que el producto conmuta.",
