@@ -51,6 +51,9 @@ project:
         - file: capitulos/23-automaticas.md
         - file: capitulos/24-nucleo.md
         - file: capitulos/25-tacticas.md
+    - title: Proyectos
+      children:
+        - file: capitulos/26-fabricante.md
 site:
   template: book-theme
   options:
