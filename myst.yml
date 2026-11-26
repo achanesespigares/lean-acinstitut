@@ -49,6 +49,7 @@ project:
         - file: capitulos/21-prop-tipos.md
         - file: capitulos/22-universos.md
         - file: capitulos/23-automaticas.md
+        - file: capitulos/24-nucleo.md
 site:
   template: book-theme
   options:

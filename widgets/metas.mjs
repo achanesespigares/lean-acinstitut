@@ -203,6 +203,7 @@ const ORDENES = {
   "#eval": "<code>#eval</code> calcula la expresión y escribe su valor.",
   "#check": "<code>#check</code> no calcula: escribe la expresión y, después de los dos puntos, su tipo.",
   "#print": "<code>#print</code> enseña cómo está definido algo.",
+  "#print axioms": "<code>#print axioms</code> no enseña la prueba: lista los axiomas de los que depende, siguiendo todo lo que usa hasta el fondo.",
   "#reduce": "<code>#reduce</code> simplifica la expresión desplegando las definiciones.",
   example: "<code>example</code> es una afirmación con su demostración, sin nombre.",
   theorem: "<code>theorem</code> es una afirmación con nombre y su demostración.",
@@ -300,7 +301,7 @@ function renderMetas({ model, el }) {
   function narracion() {
     if (modoMsg) {
       if (k === 0) return "Cada línea es una orden para Lean. Pulsa <b>Paso ▶</b> y mira qué contesta Lean a cada una en <b>Mensajes de Lean</b>.";
-      const n = E[k - 1], orden = (L[n - 1].trim().match(/^#?\w+/) || [""])[0];
+      const n = E[k - 1], lin = L[n - 1].trim(), orden = /^#print\s+axioms\b/.test(lin) ? "#print axioms" : (lin.match(/^#?\w+/) || [""])[0];
       const ms = M.filter(m => m.linea === n);
       let t = (ORDENES[orden] || "") + " Lean contesta " + ms.map(m => (m.grave === "error" ? "con un error: " : m.grave === "aviso" ? "con un aviso: " : "") + "<code>" + esc(resumen(m.texto)) + "</code>").join(" y ") + ".";
       if (notas[k]) t += " " + md(notas[k]);
