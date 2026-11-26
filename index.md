@@ -1,6 +1,6 @@
 ---
-title: Mirar y ver tu código pensar
-subtitle: Entendiendo Lean 4, desde dentro
+title: Mirar y ver · Lean 4
+subtitle: cómo piensa tu código
 ---
 
 Un libro para aprender a demostrar con Lean 4 viendo cómo piensa cada demostración: táctica a táctica, con lo que sabes y lo que te falta siempre a la vista. Es el quinto de la colección, después de los de Python, R, Julia y SageMath, y está hecho con el mismo método. Cada idea parte de una situación conocida, se construye con código y se comprueba visualizando cada paso.

@@ -1,5 +1,5 @@
 /-
-Trazar.lean · el trazador de metas del libro «Entendiendo Lean 4, desde dentro» (AC Institut)
+Trazar.lean · el trazador de metas del libro «Mirar y ver · Lean 4 · cómo piensa tu código» (AC Institut)
 
 Elabora un archivo de Lean con el propio Lean y escribe en JSON, para cada táctica que aparece
 en el texto, las metas antes y después, tal como las enseña el panel de Lean. También guarda los

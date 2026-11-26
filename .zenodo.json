@@ -1,0 +1,10 @@
+{
+  "title": "Mirar y ver · Lean 4 · cómo piensa tu código",
+  "upload_type": "lesson",
+  "description": "Libro interactivo para aprender a demostrar con Lean 4 y Mathlib viendo el panel de metas después de cada táctica, sacado de Lean de verdad. Dos rutas en cada capítulo (base y a fondo) y la misma idea en Lean, Rocq e Isabelle. AC Institut.",
+  "creators": [{ "name": "Chanes Espigares, Antonio" }],
+  "license": "cc-by-nc-sa-4.0",
+  "language": "spa",
+  "keywords": ["Lean 4", "Lean", "Mathlib", "demostración", "matemáticas", "lógica", "educación", "visualización de código", "Jupyter Book"],
+  "related_identifiers": [{ "identifier": "https://achanesespigares.github.io/lean-acinstitut/", "relation": "isDocumentedBy", "resource_type": "publication-book" }]
+}

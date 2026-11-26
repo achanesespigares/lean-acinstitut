@@ -1,4 +1,4 @@
-# Mirar y ver tu código pensar · Entendiendo Lean 4, desde dentro
+# Mirar y ver · Lean 4 · cómo piensa tu código
 
 Aprender a demostrar con Lean 4 viendo cómo piensa cada demostración, táctica a táctica, con el panel de metas a la vista. Es el quinto libro de la colección, después de los de Python, R, Julia y SageMath. Está hecho con Jupyter Book 2 (motor MyST) y se publica en GitHub Pages.
 

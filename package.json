@@ -1,7 +1,7 @@
 {
   "name": "lean-acinstitut",
   "version": "0.1.0",
-  "description": "Mirar y ver tu código pensar · Entendiendo Lean 4, desde dentro · AC Institut (Jupyter Book 2 / MyST)",
+  "description": "Mirar y ver · Lean 4 · cómo piensa tu código · AC Institut (Jupyter Book 2 / MyST)",
   "scripts": {
     "trazas": "python3 herramientas/trazar.py capitulos/*.md",
     "build": "myst build --html",
