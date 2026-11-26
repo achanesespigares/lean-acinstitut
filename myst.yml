@@ -43,6 +43,7 @@ project:
         - file: capitulos/17-inyectivas.md
         - file: capitulos/18-sucesiones.md
         - file: capitulos/19-continuidad.md
+        - file: capitulos/20-buscar.md
 site:
   template: book-theme
   options:

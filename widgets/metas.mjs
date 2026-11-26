@@ -191,6 +191,11 @@ const TACTICAS = {
   assumption: "busca entre las hipótesis una que sea justo la meta.",
   sorry: "deja la meta sin demostrar: Lean lo acepta, pero avisa.",
   rename_i: "pone nombre a las variables inaccesibles (las de la cruz ✝).",
+  "exact?": "busca en Mathlib un teorema que cierre la meta tal cual, con las hipótesis que hay. Si lo encuentra, cierra la meta y escribe en <b>Mensajes de Lean</b> la línea que puedes copiar en su lugar.",
+  "apply?": "busca en Mathlib teoremas cuya conclusión encaje con la meta. Si uno la cierra, lo dice; si no, propone los que dejan metas pendientes.",
+  "simp?": "simplifica como simp y, además, escribe en <b>Mensajes de Lean</b> qué reglas ha usado, con un simp only que puedes copiar.",
+  "rw?": "busca igualdades de Mathlib con las que reescribir la meta y las propone, cada una con la meta que dejaría.",
+  hint: "prueba varias tácticas automáticas a la vez y dice cuáles cierran la meta (🎉) y cuáles solo avanzan.",
 };
 // Qué hace cada orden de Lean (para los programas sin tácticas)
 const ORDENES = {
@@ -309,7 +314,7 @@ function renderMetas({ model, el }) {
     const p = P[k - 1], nom = nombreTactica(p.tactica);
     const base = nom.replace(/[!?]$/, "");
     let t = "<code>" + esc(p.tactica.split("\n")[0]) + (p.tactica.includes("\n") ? " …" : "") + "</code> " + (TACTICAS[nom] || TACTICAS[base] || "es una táctica: cambia las metas.");
-    if (nom.endsWith("?") && TACTICAS[base]) t += " Con <code>?</code> al final, además, escribe en <b>Mensajes de Lean</b> cómo lo ha hecho.";
+    if (nom.endsWith("?") && !TACTICAS[nom] && TACTICAS[base]) t += " Con <code>?</code> al final, además, escribe en <b>Mensajes de Lean</b> cómo lo ha hecho.";
     if (/\sat\s+\S/.test(p.tactica.split("\n")[0])) t += " Con <code>at</code>, lo hace en una hipótesis en lugar de en la meta.";
     const a = p.antes.length, d = p.despues.length;
     if (esCadena(p)) return t + (nom === "calc" ? " Lean comprobará cada eslabón por separado: si todos están bien, la meta queda demostrada. Los vemos uno a uno." : " Cada rama, la que empieza por <code>|</code>, trabaja un caso: si todas cierran su meta, la demostración está hecha. Las vemos una a una.") + (notas[k] ? " " + md(notas[k]) : "");
