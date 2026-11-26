@@ -37,6 +37,9 @@ project:
         - file: capitulos/13-desigualdades.md
         - file: capitulos/14-ring.md
         - file: capitulos/15-congruencias.md
+    - title: Parte IV · Matemáticas con Mathlib
+      children:
+        - file: capitulos/16-conjuntos.md
 site:
   template: book-theme
   options:
