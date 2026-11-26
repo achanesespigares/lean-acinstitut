@@ -33,6 +33,7 @@ project:
     - title: Parte III · Inducción y números
       children:
         - file: capitulos/11-induccion.md
+        - file: capitulos/12-divisibilidad.md
 site:
   template: book-theme
   options:
