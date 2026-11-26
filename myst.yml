@@ -54,6 +54,7 @@ project:
     - title: Proyectos
       children:
         - file: capitulos/26-fabricante.md
+        - file: capitulos/27-rsa.md
 site:
   template: book-theme
   options:
