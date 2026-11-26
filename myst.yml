@@ -47,6 +47,7 @@ project:
     - title: Parte V · Lean por dentro
       children:
         - file: capitulos/21-prop-tipos.md
+        - file: capitulos/22-universos.md
 site:
   template: book-theme
   options:
