@@ -43,6 +43,7 @@ pre.lm-codigo{ margin:0; font:400 13.5px/1.8 var(--mono); overflow-x:auto; backg
 .lm-meta .obj{ white-space:pre; margin-top:4px; padding-top:4px; border-top:1px dashed var(--fila); color:var(--acento); font-weight:600; }
 .lm-meta .obj.solo{ margin-top:0; padding-top:0; border-top:0; }
 .lm-meta .obj.cambia{ background:color-mix(in srgb,var(--acento) 10%,transparent); }
+.lm-cadena{ padding:10px 12px; border:1.5px dashed var(--borde, #9a9a9a); color:inherit; font:500 14px/1.4 var(--titulo); border-radius:6px; }
 .lm-hecho{ padding:10px 12px; border:1.5px solid var(--si); background:var(--sisuave); color:var(--si); font:600 14px/1.4 var(--titulo); border-radius:6px; }
 .lm-sorry{ padding:10px 12px; border:1.5px solid #8a5a00; background:#fbf1dc; color:#6b4500; font:600 14px/1.4 var(--titulo); border-radius:6px; }
 .lm-siguen{ margin:12px 0 6px !important; }
@@ -221,6 +222,12 @@ function renderMetas({ model, el }) {
   const M = D.mensajes || [];
   const notas = C.notas || {};
   const F = D.focos || [];
+  // ¿Hay algún error de Lean en la misma declaración (example, theorem…) que el paso p, antes de él?
+  function errorEnDecl(p) {
+    let ini = p.linea;
+    while (ini > 1 && !/^(example|theorem|lemma|def)\b/.test(L[ini - 1] || "")) ini--;
+    return M.some(m => m.grave === "error" && m.linea >= ini && m.linea <= p.lineaFin);
+  }
   // Las metas que siguen abiertas fuera del bloque «·» que acaba con el paso p (el bloque más grande)
   function pendientes(p) {
     const fs = F.filter(f => f.lineaFin === p.lineaFin && f.colFin === p.colFin)
@@ -287,11 +294,13 @@ function renderMetas({ model, el }) {
     if (nom.endsWith("?") && TACTICAS[base]) t += " Con <code>?</code> al final, además, escribe en <b>Mensajes de Lean</b> cómo lo ha hecho.";
     if (/\sat\s+\S/.test(p.tactica.split("\n")[0])) t += " Con <code>at</code>, lo hace en una hipótesis en lugar de en la meta.";
     const a = p.antes.length, d = p.despues.length;
+    if (nom === "calc") return t + " Lean comprobará cada eslabón por separado: si todos están bien, la meta queda demostrada. Los vemos uno a uno." + (notas[k] ? " " + md(notas[k]) : "");
     const err = M.find(m => m.grave === "error" && m.linea >= p.linea && m.linea <= p.lineaFin);
     if (err) return t + " Pero aquí no funciona: <b>Lean marca un error</b> en esta línea y la meta sigue abierta. Lo que dice Lean está en <b>Mensajes de Lean</b>." + (notas[k] ? " " + md(notas[k]) : "");
     if (nom === "sorry") return t + " La meta desaparece del panel, pero <b>no está demostrada</b>: Lean marca la declaración con un aviso." + (notas[k] ? " " + md(notas[k]) : "");
     const resto = d === 0 ? pendientes(p) : [];
     if (d === 0 && resto.length) t += " Esta meta queda <b>demostrada</b>. " + (resto.length === 1 ? "Sigue abierta una meta" : "Siguen abiertas " + resto.length + " metas") + ": la" + (resto.length === 1 ? "" : "s") + " ves debajo.";
+    else if (d === 0 && k === N && errorEnDecl(p)) t += " Esta meta queda <b>demostrada</b>, pero la prueba <b>no está completa</b>: Lean ha marcado un error más arriba.";
     else if (d === 0) t += k === N ? " <b>No queda ninguna meta: la demostración está completa.</b>" : " Esta meta queda <b>demostrada</b>.";
     else if (d > a) t += " Ahora hay " + plural(d, "meta", "metas") + " donde " + (a === 1 ? "había una" : "había " + a) + ".";
     else if (d < a) t += " Quedan " + plural(d, "meta", "metas") + ".";
@@ -318,9 +327,10 @@ function renderMetas({ model, el }) {
       else q(".lm-ahora").innerHTML = p.despues.length
         ? p.despues.map(g => tarjeta(g, p.antes[0])).join("")
         : nombreTactica(p.tactica) === "sorry" ? '<div class="lm-sorry">⚠ Meta tapada con sorry: sin demostrar.</div>'
-        : '<div class="lm-hecho">' + (k === N ? "✓ No quedan metas: demostrado." : "✓ Meta cerrada.") + "</div>" +
+        : nombreTactica(p.tactica) === "calc" ? '<div class="lm-cadena">La meta se demuestra eslabón a eslabón. Pulsa <b>Paso ▶</b> para comprobarlos.</div>'
+        : '<div class="lm-hecho">' + (k === N && !errorEnDecl(p) ? "✓ No quedan metas: demostrado." : "✓ Meta cerrada.") + "</div>" +
           (pendientes(p).length ? '<p class="lm-micro lm-siguen">' + (pendientes(p).length === 1 ? "Sigue abierta" : "Siguen abiertas") + '</p>' + pendientes(p).map(g => tarjeta(g)).join("") : "");
-      q(".lm-num").textContent = oculto ? "?" : plural(p.despues.length || pendientes(p).length, "meta", "metas");
+      q(".lm-num").textContent = oculto ? "?" : nombreTactica(p.tactica) === "calc" && !p.despues.length ? "cadena" : plural(p.despues.length || pendientes(p).length, "meta", "metas");
     }
     pintaMensajes();
   }

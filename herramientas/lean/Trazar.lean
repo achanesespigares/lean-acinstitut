@@ -19,7 +19,7 @@ def metaTexto (ctx : ContextInfo) (mctx : MetavarContext) (g : MVarId) : IO Stri
 /-- Nodos que no son tácticas que el lector escribe: secuencias, `by`, la puntuación… -/
 def nodoSinInteres (stx : Syntax) : Bool :=
   let k := stx.getKind
-  k == nullKind || k == identKind || k == ``Lean.Parser.Tactic.tacticSeq || k == ``Lean.Parser.Tactic.tacticSeq1Indented ||
+  k == nullKind || k == identKind || k == ``Lean.calcSteps || k == ``Lean.Parser.Tactic.tacticSeq || k == ``Lean.Parser.Tactic.tacticSeq1Indented ||
   k == ``Lean.Parser.Tactic.tacticSeqBracketed || k == ``Lean.Parser.Term.byTactic ||
   k == ``Lean.cdot || k == ``Lean.cdotTk || k == ``Lean.Parser.Tactic.case || k == `«]» || k == `«;» || k == `by
 

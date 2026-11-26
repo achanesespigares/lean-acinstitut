@@ -29,7 +29,7 @@ El libro acaba de empezar. Ya puedes leer [Cómo leer este libro](capitulos/00-c
 | Parte | Capítulos |
 |---|---|
 | I · Primeros pasos | **[Lean como calculadora](capitulos/01-calculadora.md)** · **[Funciones y definiciones](capitulos/02-funciones.md)** · **[Proposiciones y pruebas](capitulos/03-proposiciones.md)** · **[El panel de metas](capitulos/04-panel.md)** · **[Reescribir: `rw` y `simp`](capitulos/05-reescribir.md)** |
-| II · Lógica | **[Implicación y conjunción](capitulos/06-implicacion.md)** · **[Disyunción y casos](capitulos/07-disyuncion.md)** · **[Negación y absurdo](capitulos/08-negacion.md)** · **[Para todo y existe](capitulos/09-cuantificadores.md)** · Igualdad y `calc` |
+| II · Lógica | **[Implicación y conjunción](capitulos/06-implicacion.md)** · **[Disyunción y casos](capitulos/07-disyuncion.md)** · **[Negación y absurdo](capitulos/08-negacion.md)** · **[Para todo y existe](capitulos/09-cuantificadores.md)** · **[Igualdad y `calc`](capitulos/10-calc.md)** |
 | III · Inducción y números | Inducción · Divisibilidad y primos · Desigualdades · Álgebra con `ring` · Congruencias y Fermat |
 | IV · Matemáticas con Mathlib | Conjuntos · Funciones: inyectiva y sobreyectiva · Sucesiones y límites · Continuidad y derivadas · Buscar en Mathlib |
 | V · Lean por dentro | Proposiciones como tipos · Tipos dependientes y universos · Qué hacen `simp`, `omega` y `decide` · El núcleo y los axiomas · Tus propias tácticas |
